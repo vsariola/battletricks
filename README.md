@@ -52,6 +52,7 @@ whole code a single line:
 > variables in the ranges `g-z` and `G-Z` from the start; this will make
 > eventual one-lining easier.
 
+
 Load-function
 =============
 
@@ -133,6 +134,22 @@ end
 s=math.sin
 ```
 
+
+Motion blur
+===========
+
+In TIC-80 API, the `pix` and `poke4` functions round numbers towards
+zero. This can be abused for a motion blur: `poke4(i,peek4(i)-.9)` maps
+colors 1 to 15 into one lower value, but value 0 stays at it is. Like
+so:
+
+```lua
+function TIC()
+ t=time()/9
+ circ(t%240,t%136,9,15)
+ for i=0,32639 do poke4(i,peek4(i)-.9)end
+end
+```
 
 Basic raymarcher
 ================
