@@ -5,6 +5,7 @@ most awesome fatalities in
 [byte battles](https://battle.lovebyte.party/). Possibly also
 interesting for TIC-80 sizecoding in general.
 
+
 General notation
 ================
 
@@ -14,6 +15,7 @@ General notation
 | `y`    | y-coordinate of a pixel |
 | `i`    | index of a pixel        |
 | `s`    | alias for math.sin      |
+
 
 Basic optimizations
 ===================
@@ -35,6 +37,47 @@ Basic optimizations
   `math.sin` needs to be aliased. `s(w-11)` is slightly more accurate,
   with the cost of 1 byte.
 
+
+One-lining
+==========
+
+Most whitespace can be removed from LUA code. For example: `x=0y=0` is
+valid. All new lines can be removed or replaced with space, making the
+whole code a single line:
+
+```function TIC()cls()for i=0,32639 do poke4(i,i)end end```
+
+> :warning: **Letters `a-f` and `A-F` after a number cause problems.**
+> `a=0b=0` is not valid code. It is advisable to only used one letter
+> variables in the ranges `g-z` and `G-Z` from the start; this will make
+> eventual one-lining easier.
+
+Load-function
+=============
+
+Function `load` takes a string of code and returns a function with no
+named arguments, with the code as its body. It's particularly useful for
+shortening the TIC function after it's onelined:
+
+```lua
+TIC=load'cls()for i=0,32639 do poke4(i,i)end'
+```
+
+As a rule of thumb, **one-lining and using the load trick can bring a ~
+275 character code down to 256**.
+
+`load` can be even used to minimize a function with parameters: `...`
+returns the parameters. For example, the following saves 3 bytes:
+
+```lua
+SCN=load'r=...poke(16320,r)'
+```
+
+> :warning: **The backlash causes problems when using the load trick.**
+> In particular, if you have a string with escaped characters in the
+> original code i.e. `print("foo\nbar")`, then this needs to be
+> double-escaped: `load'print("foo\\nbar")'`.
+
 Dithering
 =========
 
@@ -51,7 +94,7 @@ and 1, to the color. The best technique depends whether you have `x` and
 | `(x*2-y%2)%4/4`     | 13      | ![Block dithering](dither_block.png)          | 2x2 block dithering                       |
 | `(i*2-i//80%2)%4/4` | 17      | ![Block dithering from i](dither_block_i.png) | 2x2 block dithering (almost), from i only |
 
-Code to test different dithering techniques:
+A quick example demonstrating the 2x2 block dithering:
 
 ```lua
 function TIC()
@@ -62,13 +105,15 @@ function TIC()
   poke4(i,x/30+(x*2-y%2)%4/4)
  end
 end
-s=math.sin
 ```
+
 
 Palettes
 ========
 
-Usually there's no need to make another loop for a palette; just do `j=i%48`.
+The following palettes assume that `j` goes from 0 to 47. Usually
+there's no need to make a new loop for this: just reuse another loop
+with `j=i%48`.
 
 | Expression                  | Length  | Result                                     | Notes                                           |
 | --------------------------- | ------- | ------------------------------------------ | ----------------------------------------------- |
@@ -88,11 +133,12 @@ end
 s=math.sin
 ```
 
+
 Basic raymarcher
 ================
 
 The basic structure for a raymarcher that has not been crunched to keep
-it readable:
+it readable. The map is bunch of repeated spheres here:
 
 ```lua
 function TIC()
