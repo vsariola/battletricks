@@ -1,5 +1,8 @@
 # Battle tricks
 
+THIS PAGE WON'T BE UPDATED. Future updates will be in the sizecoding.org
+wiki: [http://www.sizecoding.org/wiki/Bytebattles]
+
 This is an evolving list of various useful tricks for delivering the
 most awesome fatalities in
 [byte battles](https://battle.lovebyte.party/). Possibly also
